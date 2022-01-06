@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:github/models/repository.dart';
-import 'package:github/uis/widgets/github_list_item.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/repositories.dart';
+import '../widgets/github_list_item.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _searchController = TextEditingController();
+  var _isSearching = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('GitHub'),
-      ),
+      appBar: _buildSearchableAppBar(),
       body: FutureBuilder(
         future: Provider.of<Repositories>(context, listen: false)
             .fetchRepositories(),
@@ -37,5 +42,51 @@ class HomeScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  AppBar _buildSearchableAppBar() {
+    return AppBar(
+      title: _isSearching
+          ? TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                hintText: 'Find a Repository ...',
+              ),
+              onSubmitted: (value) =>
+                  Provider.of<Repositories>(context, listen: false)
+                      .fetchRepositories(searchKeyWord: value),
+            )
+          : const Text('GitHub'),
+      actions: [
+        _isSearching
+            ? IconButton(
+                icon: const Icon(Icons.clear_rounded),
+                onPressed: () => _clearSearchOrPop(),
+              )
+            : IconButton(
+                icon: const Icon(Icons.search_rounded),
+                onPressed: _startSearch,
+              ),
+      ],
+    );
+  }
+
+  void _startSearch() {
+    ModalRoute.of(context)!
+        .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearch));
+    setState(() => _isSearching = true);
+  }
+
+  void _stopSearch() {
+    setState(() {
+      _searchController.clear();
+      _isSearching = false;
+    });
+  }
+
+  void _clearSearchOrPop() {
+    _searchController.text.isNotEmpty
+        ? setState(() => _searchController.clear())
+        : Navigator.pop(context);
   }
 }
