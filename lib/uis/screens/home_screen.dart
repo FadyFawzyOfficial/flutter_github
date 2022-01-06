@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:github/models/repository.dart';
+import 'package:github/uis/widgets/github_list_item.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/repositories.dart';
@@ -27,23 +29,7 @@ class HomeScreen extends StatelessWidget {
                 itemCount: repositoriesProvider.repositories.length,
                 itemBuilder: (context, index) {
                   final currentRepo = repositoriesProvider.repositories[index];
-                  return Card(
-                    child: ListTile(
-                      leading: Image.network(currentRepo.owner.avatarUrl),
-                      title: Text(currentRepo.name),
-                      subtitle: Text(currentRepo.description),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            color: Colors.amber,
-                          ),
-                          Text('${currentRepo.stars}'),
-                        ],
-                      ),
-                    ),
-                  );
+                  return GitHubListItem(repository: currentRepo);
                 },
               ),
             );
