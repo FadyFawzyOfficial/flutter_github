@@ -34,6 +34,12 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  # A wrapper around InheritedWidget to make them easier to use and more reusable.
+  provider: ^6.0.2
+  # A composable, Future-based library for making HTTP requests.
+  # This package contains a set of high-level functions and classes that make it easy to consume HTTP resources.
+  # It's multi-platform, and supports mobile, desktop, and the browser.
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:
