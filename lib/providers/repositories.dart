@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import '../constants/strings.dart';
 import '../models/repository.dart';
 
-class Repositoires extends ChangeNotifier {
+class Repositories extends ChangeNotifier {
   List<Repository> _repositories = [];
 
   List<Repository> get repositories => _repositories;

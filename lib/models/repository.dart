@@ -28,7 +28,7 @@ class Repository {
       name: map['name'],
       description: map['description'],
       htmlUrl: map['html_url'],
-      language: map['language'],
+      language: map['language'] ?? '',
       stars: map['stargazers_count'],
       watchers: map['watchers'],
       forks: map['forks'],
