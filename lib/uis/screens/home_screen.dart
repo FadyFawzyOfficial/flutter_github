@@ -16,14 +16,33 @@ class _HomeScreenState extends State<HomeScreen> {
   var _isSearching = false;
   var _isList = true;
 
+  // Because we have something (some other state we're managing or anything
+  // like that in our case: List & Gird View and Search options)
+  // in this widget which cause build method to run again (rebuild),then
+  // fetch and set repositories would of course also be executed.
+  // We might want to avoid if just something else changed in this widget,
+  // if there is no reason to fetch new repositories. We don't want to fetch
+  // new repositories just because something else changed in this widget,
+  // which doesn't affect the orders.
+  late Future _repositoriesProvider;
+
+  // In this method return the result of this call to fetch and set repositories.
+  Future _obtainRepositoriesProvider() =>
+      Provider.of<Repositories>(context, listen: false).fetchRepositories();
+
+  @override
+  void initState() {
+    super.initState();
+    _repositoriesProvider = _obtainRepositoriesProvider();
+  }
+
   @override
   Widget build(BuildContext context) {
     debugPrint('Home Screen Build');
     return Scaffold(
       appBar: _buildSearchableAppBar(),
       body: FutureBuilder(
-        future: Provider.of<Repositories>(context, listen: false)
-            .fetchRepositories(),
+        future: _repositoriesProvider,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -101,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Convert from List view to Grid view and vice versa
   void _switchView() => setState(() => _isList = !_isList);
 
-  // Create a virtual screen with the upcomming new content from search
+  // Create a virtual screen with the upcoming new content from search
   void _startSearch() {
     ModalRoute.of(context)!
         .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearch));
@@ -115,6 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // This method clear the search text field or pop if it is clear
   void _clearSearchOrPop() {
     _searchController.text.isNotEmpty
         ? setState(() => _searchController.clear())
