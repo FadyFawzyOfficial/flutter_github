@@ -16,70 +16,46 @@ class _HomeScreenState extends State<HomeScreen> {
   var _isSearching = false;
   var _isList = true;
 
-  // Because we have something (some other state we're managing or anything
-  // like that in our case: List & Gird View and Search options)
-  // in this widget which cause build method to run again (rebuild),then
-  // fetch and set repositories would of course also be executed.
-  // We might want to avoid if just something else changed in this widget,
-  // if there is no reason to fetch new repositories. We don't want to fetch
-  // new repositories just because something else changed in this widget,
-  // which doesn't affect the orders.
-  late Future _repositoriesProvider;
-
-  // In this method return the result of this call to fetch and set repositories.
-  Future _obtainRepositoriesProvider() =>
-      Provider.of<Repositories>(context, listen: false).fetchRepositories();
-
   @override
   void initState() {
     super.initState();
-    _repositoriesProvider = _obtainRepositoriesProvider();
+    Provider.of<Repositories>(context, listen: false).fetchRepositories();
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Home Screen Build');
     return Scaffold(
       appBar: _buildSearchableAppBar(),
-      body: FutureBuilder(
-        future: _repositoriesProvider,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.error != null) {
-            return Center(child: Text('${snapshot.error}'));
-          } else {
-            return Consumer<Repositories>(
-              builder: (context, repositoriesProvider, _) {
-                if (repositoriesProvider.status == Status.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (repositoriesProvider.status == Status.fail) {
-                  return const Center(child: Text('An error has occurred'));
-                }
-                return _isList
-                    ? ListView.builder(
-                        itemCount: repositoriesProvider.repositories.length,
-                        itemBuilder: (context, index) {
-                          final currentRepo =
-                              repositoriesProvider.repositories[index];
-                          return GitHubListItem(repository: currentRepo);
-                        },
-                      )
-                    : GridView.builder(
-                        itemCount: repositoriesProvider.repositories.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                        ),
-                        itemBuilder: (context, index) {
-                          final currentRepo =
-                              repositoriesProvider.repositories[index];
-                          return GitHubListItem(repository: currentRepo);
-                        },
-                      );
-              },
-            );
+      body: Consumer<Repositories>(
+        builder: (context, repositoriesProvider, _) {
+          switch (repositoriesProvider.status) {
+            case Status.initial:
+            case Status.loading:
+              return const Center(child: CircularProgressIndicator());
+            case Status.fail:
+              return const Center(child: Text('An error has occurred'));
+            case Status.success:
+              return _isList
+                  ? ListView.builder(
+                      itemCount: repositoriesProvider.repositories.length,
+                      itemBuilder: (context, index) {
+                        final currentRepo =
+                            repositoriesProvider.repositories[index];
+                        return GitHubListItem(repository: currentRepo);
+                      },
+                    )
+                  : GridView.builder(
+                      itemCount: repositoriesProvider.repositories.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                      itemBuilder: (context, index) {
+                        final currentRepo =
+                            repositoriesProvider.repositories[index];
+                        return GitHubListItem(repository: currentRepo);
+                      },
+                    );
           }
         },
       ),
