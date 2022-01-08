@@ -51,27 +51,34 @@ class _HomeScreenState extends State<HomeScreen> {
             return Center(child: Text('${snapshot.error}'));
           } else {
             return Consumer<Repositories>(
-              builder: (context, repositoriesProvider, _) => _isList
-                  ? ListView.builder(
-                      itemCount: repositoriesProvider.repositories.length,
-                      itemBuilder: (context, index) {
-                        final currentRepo =
-                            repositoriesProvider.repositories[index];
-                        return GitHubListItem(repository: currentRepo);
-                      },
-                    )
-                  : GridView.builder(
-                      itemCount: repositoriesProvider.repositories.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                      ),
-                      itemBuilder: (context, index) {
-                        final currentRepo =
-                            repositoriesProvider.repositories[index];
-                        return GitHubListItem(repository: currentRepo);
-                      },
-                    ),
+              builder: (context, repositoriesProvider, _) {
+                if (repositoriesProvider.status == Status.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (repositoriesProvider.status == Status.fail) {
+                  return const Center(child: Text('An error has occurred'));
+                }
+                return _isList
+                    ? ListView.builder(
+                        itemCount: repositoriesProvider.repositories.length,
+                        itemBuilder: (context, index) {
+                          final currentRepo =
+                              repositoriesProvider.repositories[index];
+                          return GitHubListItem(repository: currentRepo);
+                        },
+                      )
+                    : GridView.builder(
+                        itemCount: repositoriesProvider.repositories.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        ),
+                        itemBuilder: (context, index) {
+                          final currentRepo =
+                              repositoriesProvider.repositories[index];
+                          return GitHubListItem(repository: currentRepo);
+                        },
+                      );
+              },
             );
           }
         },
