@@ -14,9 +14,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
   var _isSearching = false;
+  var _isList = true;
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('Home Screen Build');
     return Scaffold(
       appBar: _buildSearchableAppBar(),
       body: FutureBuilder(
@@ -30,13 +32,27 @@ class _HomeScreenState extends State<HomeScreen> {
             return Center(child: Text('${snapshot.error}'));
           } else {
             return Consumer<Repositories>(
-              builder: (context, repositoriesProvider, _) => ListView.builder(
-                itemCount: repositoriesProvider.repositories.length,
-                itemBuilder: (context, index) {
-                  final currentRepo = repositoriesProvider.repositories[index];
-                  return GitHubListItem(repository: currentRepo);
-                },
-              ),
+              builder: (context, repositoriesProvider, _) => _isList
+                  ? ListView.builder(
+                      itemCount: repositoriesProvider.repositories.length,
+                      itemBuilder: (context, index) {
+                        final currentRepo =
+                            repositoriesProvider.repositories[index];
+                        return GitHubListItem(repository: currentRepo);
+                      },
+                    )
+                  : GridView.builder(
+                      itemCount: repositoriesProvider.repositories.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                      itemBuilder: (context, index) {
+                        final currentRepo =
+                            repositoriesProvider.repositories[index];
+                        return GitHubListItem(repository: currentRepo);
+                      },
+                    ),
             );
           }
         },
@@ -67,10 +83,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.search_rounded),
                 onPressed: _startSearch,
               ),
+        _isList
+            ? IconButton(
+                icon: const Icon(Icons.grid_on_rounded),
+                tooltip: 'Switch to Gird',
+                onPressed: _switchView,
+              )
+            : IconButton(
+                icon: const Icon(Icons.grid_off_rounded),
+                tooltip: 'Switch to List',
+                onPressed: _switchView,
+              ),
       ],
     );
   }
 
+  // Convert from List view to Grid view and vice versa
+  void _switchView() => setState(() => _isList = !_isList);
+
+  // Create a virtual screen with the upcomming new content from search
   void _startSearch() {
     ModalRoute.of(context)!
         .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearch));
