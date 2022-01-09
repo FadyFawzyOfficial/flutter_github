@@ -15,8 +15,9 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => Repositories(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'GitHub',
-        theme: ThemeData(primarySwatch: Colors.blue),
+        theme: ThemeData.dark(),
         home: const HomeScreen(),
       ),
     );

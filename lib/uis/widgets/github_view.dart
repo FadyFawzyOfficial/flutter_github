@@ -24,6 +24,7 @@ class GitHubView extends StatelessWidget {
           itemCount: repositories.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
+            childAspectRatio: 0.80,
           ),
           itemBuilder: (context, index) =>
               GitHubListItem(repository: repositories[index]),
