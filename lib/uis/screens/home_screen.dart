@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/repositories.dart';
-import '../widgets/github_list_item.dart';
+import '../widgets/github_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -35,27 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
             case Status.fail:
               return const Center(child: Text('An error has occurred'));
             case Status.success:
-              return _isList
-                  ? ListView.builder(
-                      itemCount: repositoriesProvider.repositories.length,
-                      itemBuilder: (context, index) {
-                        final currentRepo =
-                            repositoriesProvider.repositories[index];
-                        return GitHubListItem(repository: currentRepo);
-                      },
-                    )
-                  : GridView.builder(
-                      itemCount: repositoriesProvider.repositories.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                      ),
-                      itemBuilder: (context, index) {
-                        final currentRepo =
-                            repositoriesProvider.repositories[index];
-                        return GitHubListItem(repository: currentRepo);
-                      },
-                    );
+              return GitHubView(
+                isList: _isList,
+                repositories: repositoriesProvider.repositories,
+              );
           }
         },
       ),
