@@ -26,9 +26,9 @@ class Repository {
   factory Repository.fromMap(Map<String, dynamic> map) {
     return Repository(
       name: map['name'],
-      description: map['description'],
+      description: map['description'] ?? 'No Description',
       htmlUrl: map['html_url'],
-      language: map['language'] ?? '',
+      language: map['language'] ?? 'No Language',
       stars: map['stargazers_count'],
       watchers: map['watchers'],
       forks: map['forks'],
