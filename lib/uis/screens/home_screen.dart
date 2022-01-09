@@ -17,22 +17,25 @@ class _HomeScreenState extends State<HomeScreen> {
   var _isList = true;
 
   @override
+  void initState() {
+    super.initState();
+    Provider.of<Repositories>(context, listen: false).fetchRepositories();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    debugPrint('Home Screen Build');
     return Scaffold(
       appBar: _buildSearchableAppBar(),
-      body: FutureBuilder(
-        future: Provider.of<Repositories>(context, listen: false)
-            .fetchRepositories(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.error != null) {
-            return Center(child: Text('${snapshot.error}'));
-          } else {
-            return Consumer<Repositories>(
-              builder: (context, repositoriesProvider, _) => _isList
+      body: Consumer<Repositories>(
+        builder: (context, repositoriesProvider, _) {
+          switch (repositoriesProvider.status) {
+            case Status.initial:
+            case Status.loading:
+              return const Center(child: CircularProgressIndicator());
+            case Status.fail:
+              return const Center(child: Text('An error has occurred'));
+            case Status.success:
+              return _isList
                   ? ListView.builder(
                       itemCount: repositoriesProvider.repositories.length,
                       itemBuilder: (context, index) {
@@ -52,8 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             repositoriesProvider.repositories[index];
                         return GitHubListItem(repository: currentRepo);
                       },
-                    ),
-            );
+                    );
           }
         },
       ),
@@ -101,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Convert from List view to Grid view and vice versa
   void _switchView() => setState(() => _isList = !_isList);
 
-  // Create a virtual screen with the upcomming new content from search
+  // Create a virtual screen with the upcoming new content from search
   void _startSearch() {
     ModalRoute.of(context)!
         .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearch));
@@ -115,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // This method clear the search text field or pop if it is clear
   void _clearSearchOrPop() {
     _searchController.text.isNotEmpty
         ? setState(() => _searchController.clear())
