@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
             case Status.loading:
               return const Center(child: CircularProgressIndicator());
             case Status.fail:
-              return const Center(child: Text('An error has occurred'));
+              return const Center(child: Text('No Internet Connection'));
             case Status.success:
               return GitHubView(
                 isList: _isList,
