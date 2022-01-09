@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/repository.dart';
-import 'github_list_item.dart';
+import 'github_item.dart';
 
 class GitHubView extends StatelessWidget {
   final List<Repository> repositories;
@@ -18,15 +18,17 @@ class GitHubView extends StatelessWidget {
       ? ListView.builder(
           itemCount: repositories.length,
           itemBuilder: (context, index) =>
-              GitHubListItem(repository: repositories[index]),
+              GitHubItem(repository: repositories[index]),
         )
       : GridView.builder(
           itemCount: repositories.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            childAspectRatio: 0.80,
+            mainAxisExtent: 250,
           ),
-          itemBuilder: (context, index) =>
-              GitHubListItem(repository: repositories[index]),
+          itemBuilder: (context, index) => GitHubItem(
+            repository: repositories[index],
+            isList: false,
+          ),
         );
 }

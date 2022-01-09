@@ -4,12 +4,14 @@ import '../../constants/styles.dart';
 import '../../models/repository.dart';
 import '../../utilities/url_launcher.dart';
 
-class GitHubListItem extends StatelessWidget {
+class GitHubItem extends StatelessWidget {
   final Repository repository;
+  final bool isList;
 
-  const GitHubListItem({
+  const GitHubItem({
     Key? key,
     required this.repository,
+    this.isList = true,
   }) : super(key: key);
 
   @override
@@ -47,8 +49,8 @@ class GitHubListItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: kRepositoryDescriptionTextStyle,
               ),
-              const SizedBox(height: 16),
-              const Spacer(),
+              const SizedBox(height: 8),
+              isList ? const SizedBox() : const Spacer(),
               Row(
                 children: [
                   const Icon(
@@ -60,17 +62,18 @@ class GitHubListItem extends StatelessWidget {
                     (repository.stars / 1000).toStringAsFixed(1) + 'k',
                     style: kRepositoryHeaderFooterTextStyle,
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 8),
                   const Icon(
                     Icons.circle_rounded,
                     color: Colors.cyan,
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    repository.language,
-                    style: kRepositoryHeaderFooterTextStyle,
+                  Expanded(
+                    child: Text(
+                      repository.language,
+                      style: kRepositoryHeaderFooterTextStyle,
+                    ),
                   ),
-                  const Spacer(),
                 ],
               ),
             ],
