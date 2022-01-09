@@ -40,6 +40,8 @@ dependencies:
   # This package contains a set of high-level functions and classes that make it easy to consume HTTP resources.
   # It's multi-platform, and supports mobile, desktop, and the browser.
   http: ^0.13.4
+  # Flutter plugin for launching a URL. Supports web, phone, SMS, and email schemes.
+  url_launcher: ^6.0.17
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/repository.dart';
+import '../../utilities/url_launcher.dart';
 
 class GitHubListItem extends StatelessWidget {
   const GitHubListItem({
@@ -27,7 +28,8 @@ class GitHubListItem extends StatelessWidget {
             Text('${repository.stars}'),
           ],
         ),
-        onTap: () {},
+        onTap: () =>
+            UrlLauncher.launchInWebViewWithJavaScript(repository.htmlUrl),
       ),
     );
   }
